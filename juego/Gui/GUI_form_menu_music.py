@@ -7,11 +7,12 @@ from Gui.GUI_button import *
 from Gui.GUI_button_image import *
 
 class FormMenuMusic(Form):
-    def __init__(self, screen, x, y, w, h, color_background, path_image):
-        super().__init__(screen, x, y, w, h, color_background)
+    def __init__(self, screen, x, y, w, h, path_image):
+        super().__init__(screen, x, y, w, h)
         imagen_aux = pygame.image.load(path_image)
         imagen_aux = pygame.transform.scale(imagen_aux, (w, h))
-        self._slave = imagen_aux
+        self._imagen_original = imagen_aux
+        self._slave = imagen_aux.copy()
         if pygame.mixer.music.get_busy():
             self._estado = "Reproduciendo"
             self.btn_play = Button(self._slave, x, y, 100, 70, 200, 50, "Green", "Blue", self.btn_play_click, "Nombre", self._estado, "Comic Sans", 25, "Black")
@@ -48,6 +49,9 @@ class FormMenuMusic(Form):
 
         self.flag_play = not self.flag_play
 
+    def render(self):
+        self._slave.blit(self._imagen_original,(0,0))
+        
     def update_volumen(self, lista_eventos):
         self.volumen = self.slider_volumen.value
         self.label_volumen.set_text(f"{round(self.volumen * 100)}%")
@@ -55,6 +59,7 @@ class FormMenuMusic(Form):
 
     def update(self, lista_eventos):
         if self.verificar_dialog_result():
+            self.render()           
             for widget in self.lista_widgets:
                 widget.update(lista_eventos)
             self.draw()

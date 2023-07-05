@@ -8,9 +8,12 @@ class Proyectil (Item):
         self._velocidad = 0
 
     def verificar_objetivo(self, personaje):
+        '''
+        Verifica que el protectil haga colision contra el personaje enemigo o jugador,
+        cambiando el estado de colision a True
+        '''
         if self._rectangulo.colliderect(personaje._rectangulo):
             self._colision = True
-            print("impacto")
 
     def update(self, screen):
         self._rectangulo.x += self._velocidad

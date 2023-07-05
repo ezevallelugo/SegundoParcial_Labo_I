@@ -35,6 +35,9 @@ class Personaje (Objeto):
         return self._esta_en_el_aire
     
     def caer_gravedad(self):
+        '''
+        Crea el efecto de estar cayendo con una gravedad simulada
+        '''
         if self._esta_en_el_aire:
             if self._velocidad_y < 15:
                 self._velocidad_y += 0.5 #Gravedad           
@@ -45,6 +48,11 @@ class Personaje (Objeto):
         self._velocidad_y = -15
 
     def verificar_colision_plataforma(self, lista_plataformas:list):
+        '''
+        Verifica cada colision que hace con cualquier plataforma segun la ubicacion del personaje,
+        si llega a estar en el piso se mantiene en el, si colisiona con la derecha o izquierda, se levanta
+        una bandera, y si la cabeza colisiona con la base el impulso del salto se detiene con velocidad 0
+        '''
         self.caer_gravedad()
         self._esta_en_el_aire = True
         self._colision_derecha = False
@@ -71,13 +79,12 @@ class Personaje (Objeto):
                 self._colision_cabeza = True
                 self._velocidad_y = 0
 
-    #def verificar_colision_item(self,lista_items: list):
-    #    self._colision_item = False
-    #    for item in lista_items:
-    #        if self._rectangulo.colliderect(item._rectangulo):
-    #            self._colision_item = True
-
     def crear_proyectil(self, ruta_imagen, escala):
+        '''
+        Se crea un proyectil y se agrega a la lista de proyectiles segun la 
+        orientacion del personaje
+        '''
+
         superficie = pygame.transform.scale(pygame.image.load(ruta_imagen),escala)
         if self._orientacion:
             proyectil = Proyectil(superficie, (self._rectangulo.right,self._rectangulo.centery - 10), None)
@@ -89,12 +96,20 @@ class Personaje (Objeto):
         self._lista_proyectiles.append(proyectil)
 
     def verificar_colision_proyectil_plataforma(self, lista_plataformas: list):
+        '''
+        Verifica que cada proyectil, si es que colisiona contra un objeto,
+        la bandera colision se levante
+        '''
         for proyectil in self._lista_proyectiles:
             for plataforma in lista_plataformas:
                 if proyectil._rectangulo.colliderect(plataforma["main"]):
                     proyectil._colision = True
 
     def actualizar_y_eliminar_proyectiles(self, screen):
+        '''
+        Verifica que cada proyectil de la lista de proyectiles tenga la bandera 
+        de colision levantada para eliminarlo de la pantalla
+        '''
         i = 0
         while i < len(self._lista_proyectiles):
             self._lista_proyectiles[i].update(screen)
@@ -103,7 +118,11 @@ class Personaje (Objeto):
                 i -= 1
             i += 1
 
-    def mover_en_ejex(self, velocidad):        
+    def mover_en_ejex(self, velocidad):  
+        '''
+        Permite la movilidad en el eje x segun la velocidad y si el personaje 
+        colisiona con el lado derecho o izquierdo, evitando pasarlo de lado
+        '''      
         if velocidad > 0 and not self._colision_derecha:
             super().mover_en_ejex(velocidad)
         elif velocidad < 0 and not self._colision_izquierda: 
@@ -113,7 +132,6 @@ class Personaje (Objeto):
 
 
     def update(self, screen):
-        #Actualizo la informacion de los proyectiles del personaje
         self.actualizar_y_eliminar_proyectiles(screen)                
         super().update(screen)
 

@@ -281,6 +281,9 @@ pocion_salud = [pygame.image.load("RECURSOS/Item/Pocion_rojo/01.png"),
 
 #Funciones generales
 def cambiar_modo():
+    '''
+    Cambia el estado del debug
+    '''
     global DEBUG
     DEBUG = not DEBUG
 
@@ -288,18 +291,27 @@ def get_mode():
     return DEBUG
 
 def girar_imagenes(lista_original, flip_x, flip_y):
+    '''
+    Permite invertir las imagenes de la lista de imagenes que se asigne como parametro
+    '''
     lista_girada = []
     for imagen in lista_original:
         lista_girada.append(pygame.transform.flip(imagen, flip_x, flip_y))
     return lista_girada
 
 def reescalar_imagenes(lista_animaciones, escala):
+    '''
+    Permite reescalar las imagenes de la lista de imagenes que se asigne como parametro
+    '''
     for lista in lista_animaciones:
         for i in range(len(lista)):
             imagen = lista[i]
             lista[i] = pygame.transform.scale(imagen, escala)
 
 def cargar_listas_de_imagenes_jugador(escala):
+    '''
+    Carga las imagenes por lista en un valor de un diccionario de acciones que tendra el jugador
+    '''
     diccionario = {}
     diccionario["quieto"] = cargar_imagenes_por_lista(personaje_quieto, escala)
     diccionario["quieto_izq"] = girar_imagenes(diccionario["quieto"], True, False)
@@ -315,6 +327,9 @@ def cargar_listas_de_imagenes_jugador(escala):
     return diccionario 
 
 def cargar_imagenes_por_lista(lista: list,escala: tuple):
+    '''
+    Carga solo una lista de imagenes a una nueva lista con una escala como parametro
+    '''
     nueva_lista = []
     for i in lista:        
         imagen = pygame.transform.scale(i,escala)

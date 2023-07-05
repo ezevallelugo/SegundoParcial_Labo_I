@@ -13,7 +13,8 @@ screen = pygame.display.set_mode(TAMAÑO_PANTALLA)
 pygame.display.set_caption("LAS PRUEBAS")
 icono = pygame.image.load("RECURSOS/icon.png")
 pygame.display.set_icon(icono)
-form_prueba = FormPrueba(screen,400,100,800,600,"Gold","Blue",True,"RECURSOS/UI/tabla2.png")
+
+form_menu_principal = FormPrincipal(screen,400,100,800,600,"RECURSOS/UI/tabla2.png")
 
 
 while True:
@@ -24,8 +25,8 @@ while True:
             pygame.quit()
             sys.exit()
 
-    form_prueba.update(lista_eventos)
-
-
+    form_menu_principal.update(lista_eventos)
 
     pygame.display.flip()
+
+    

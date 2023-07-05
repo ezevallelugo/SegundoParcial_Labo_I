@@ -1,5 +1,6 @@
 import pygame
 import random
+import sqlite3
 from configuraciones import *
 from clase_nivel import Nivel
 from clase_jugador_enemigo import Jugador, Enemigo
@@ -23,7 +24,6 @@ class NivelTres (Nivel):
         pygame.mixer.music.load("RECURSOS/Sonidos/jardines.mp3")
         pygame.mixer.music.set_volume(0.1)
         pygame.mixer.music.play(-1)
-        audio_historia = "RECURSOS/Sonidos/audio3.mp3"
         
         #3 - Genero un evento propio
         tick = pygame.USEREVENT + 0 #Evento propio
@@ -123,4 +123,20 @@ class NivelTres (Nivel):
         tiempo_comienzo = pygame.time.get_ticks()
         tiempo_final = tiempo_comienzo + (tiempo_duracion_segundos * 1000)
 
-        super().__init__(pantalla, personaje, lista_plataformas, lista_plataformas_lados, lista_enemigos, lista_recompensas, lista_trampas, lista_pociones, lista_llaves, tiempo_final, audio_historia, fondo_escalado)
+        datos_jugador = {}
+        with sqlite3.connect("juego_pygame.db") as conexion:
+            try: 
+                sentencia = '''
+                            SELECT Nombre,Nivel_dos,Puntaje_actual,Permiso FROM Jugadores WHERE Id = 1
+                            '''
+                coleccion = conexion.execute(sentencia)
+                for fila in coleccion:
+                    datos_jugador["Nombre"] = fila[0]
+                    datos_jugador["Puntaje_anterior"] = fila[1]
+                    datos_jugador["Puntaje_actual"] = fila[2]
+                    datos_jugador["Permiso"] = fila[3]
+                print("Datos extraidos con exito") 
+            except Exception as e:
+                print(f"Error. No se pudo extraer los datos.\nRazon: {e}")
+
+        super().__init__(pantalla, personaje, lista_plataformas, lista_plataformas_lados, lista_enemigos, lista_recompensas, lista_trampas, lista_pociones, lista_llaves, tiempo_final, datos_jugador, 3, fondo_escalado)

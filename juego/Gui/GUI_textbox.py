@@ -1,4 +1,5 @@
 import pygame
+import sqlite3
 from pygame.locals import *
 from Gui.GUI_widget import *
 import unicodedata
@@ -80,6 +81,17 @@ class TextBox(Widget):
                 caracter = evento.unicode
                 if evento.key == pygame.K_BACKSPACE:
                    self._text = self._text[:-1]
+                elif evento.key == pygame.K_RETURN:
+                    print(self._text)
+                    with sqlite3.connect("juego_pygame.db") as conexion:
+                        try:        
+                            sentencia = '''
+                                        INSERT INTO Jugadores(Nombre,Puntaje_anterior,Puntaje_actual,Permiso) values (?,0,0,1)                    
+                                        '''
+                            conexion.execute(sentencia,(self._text,))
+                            print("Dato insertado con exito")
+                        except Exception as e:
+                            print(f"Error. No se pudo insertar los datos.\nRazon: {e}")
                 elif len(caracter) == 1 and unicodedata.category(caracter)[0] != 'C':
                     self._text += caracter
                 self.render()

@@ -18,17 +18,33 @@ class Enemigo (Personaje):
         super().__init__(imagen, posicion_inicial, acciones)
         self._orientacion = random.choice([True, False])
         self._vida = 30
+        self._dano = 10
+
+    def get_vida(self):
+        return self._vida
+    def set_vida(self, vida):
+        self._vida = vida
+
+    def get_dano(self):
+        return self._dano
+    def set_dano(self, dano):
+        self._dano = dano
 
     def atacar(self):
+        '''
+        Ejecuta la accion de crear proyectiles en un intervalo de 2 segundos
+        '''
         if not self._esta_en_el_aire:
             ahora = pygame.time.get_ticks()       
-            if ahora - self._ultimo_disparo > 4000: 
-                self.animar_movimiento(self._diccionario_acciones["ataque"]) 
+            if ahora - self._ultimo_disparo > 2000: 
+                #self.animar_movimiento(self._diccionario_acciones["ataque"]) 
                 self.crear_proyectil("RECURSOS/Enemigo/Ataque/bola.png",(50,50))
-                #bola_sonido.play() 
                 self._ultimo_disparo = ahora
 
     def realizar_comportamiento(self,lista_plataformas_lados):
+        '''
+        Realiza el comportamiento autonomo del enemigo, limitandolo a caminar, cambiar de lado y disparar
+        '''
         #Establecer limites de las plataformas que pisaron
         for plataforma in lista_plataformas_lados:
             if self._rectangulo_lados["bottom"].colliderect(plataforma["top"]):
@@ -67,6 +83,7 @@ class Jugador (Personaje):
         self._invencible = False
         self._invencible_duracion = 1000
         self._tiempo_colision_enemigo = 0
+        self._saltos = 2
 
     def set_puntaje(self, puntaje):
         self._puntaje = puntaje
@@ -79,6 +96,10 @@ class Jugador (Personaje):
         return self._accion
     
     def verificar_eventos_personaje(self):
+        '''
+        Verifica los eventos del jugador segun la tecla que haya pulsado, 
+        cambiando el estado de la accion
+        '''
         evento = pygame.key.get_pressed()
         if evento[pygame.K_LEFT]:
             self._accion = "Izquierda"
@@ -93,6 +114,10 @@ class Jugador (Personaje):
             self._accion = "Quieto"
     
     def verificar_accion(self):
+        '''
+        Verifica la accion del jugador permitiendole moverse en el eje x o y, ademas 
+        de disparar proyectiles y una animacion de herido y quieto
+        '''
         match self._accion:
             case "Quieto":
                 self._velocidad_x = 0
@@ -137,6 +162,10 @@ class Jugador (Personaje):
                 self.animar_movimiento(self._diccionario_acciones["herido"])
 
     def realizar_invencibilidad(self):
+        '''
+        Se ejecuta un estado de invencibilidad en el que si el jugador resultase herido
+        se le resta puntaje y salud, y empieza el conteo del tiempo exacto de colision
+        '''
         if not self._invencible:
             if self._salud > 0:
                 self._salud -= 10
@@ -148,11 +177,19 @@ class Jugador (Personaje):
             
 
     def verificar_colision_trampas(self,lista):
+        '''
+        Verifica la colision de cada trampa del nivel, en el que de ser el caso
+        se realiza la invencibilidad
+        '''
         for item in lista:
             if self._rectangulo.colliderect(item._rectangulo):
                 self.realizar_invencibilidad() 
 
     def remover_de_la_lista(self,lista):
+        '''
+        Verifica que si el estado de colision de un objeto es True, 
+        este se elimine de la lista
+        '''
         i = 0
         while i < len(lista):
             if lista[i]._colision:
@@ -161,6 +198,10 @@ class Jugador (Personaje):
             i += 1
 
     def verificar_colision_recompensas(self,lista:list):
+        '''
+        Verifica que si el estado de colision de un objeto es True, 
+        este se elimine de la lista. Ademas, otorga puntos extra
+        '''
         for item in lista:
             if self._rectangulo.colliderect(item._rectangulo):
                 self._puntaje += item._puntaje
@@ -169,6 +210,10 @@ class Jugador (Personaje):
         self.remover_de_la_lista(lista)
 
     def verificar_colision_pocion_salud(self,lista:list):
+        '''
+        Verifica que si el estado de colision de un objeto es True, 
+        este se elimine de la lista. Ademas, otorga salud extra
+        '''
         for item in lista:
             if self._rectangulo.colliderect(item._rectangulo):
                 self._salud += item._salud_extra
@@ -177,14 +222,20 @@ class Jugador (Personaje):
         self.remover_de_la_lista(lista)
 
     def verificar_colision_llave(self, lista:list):
+        '''
+        Verifica que si el estado de colision de un objeto es True, 
+        este se elimine de la lista.
+        '''
         for item in lista:
             if self._rectangulo.colliderect(item._rectangulo):
                 item._colision = True
-                print("colision")
                 llave_sonido.play()
         self.remover_de_la_lista(lista)
 
     def verificar_colision_item(self, lista_items: list, tipo_item: str):
+        '''
+        Verifica la colision del item segun el tipo de items asignado como parametro
+        '''
         match tipo_item:
             case "Trampa":
                 self.verificar_colision_trampas(lista_items)
@@ -197,12 +248,16 @@ class Jugador (Personaje):
             
 
     def verificar_colision_enemigo(self,lista_enemigos: list):
+        '''
+        Verifica la colision del jugador contra el enemigo donde se realizara
+        una accion diferente segun la situacion. Si la vida del enemigo es 0,
+        se elimina de la pantalla
+        '''
         #Por cada enemigo
         for enemigo in lista_enemigos:
             if self._rectangulo.colliderect(enemigo._rectangulo):
                 self.realizar_invencibilidad()
                 self._accion = "Herido"
-                print("colision")
             #Por cada proyectil que el enemigo me impacta
             for proyectil in enemigo._lista_proyectiles:
                 if proyectil._rectangulo.colliderect(self._rectangulo):
@@ -225,6 +280,11 @@ class Jugador (Personaje):
             i += 1
 
     def verificar_invencibilidad(self):
+        '''
+        Verifica que una vez que el jugador sea invencible, se calcula un lapso de tiempo
+        para que el jugador se reubique desde el momento de la colision con el enemigo.
+        Pasado el tiempo, el jugador vuelve a ser vulnerable
+        '''
         if self._invencible:
             tiempo_actual = pygame.time.get_ticks()
             if tiempo_actual - self._tiempo_colision_enemigo >= self._invencible_duracion:

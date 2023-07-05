@@ -4,7 +4,7 @@ from pygame.locals import *
 from Gui.GUI_button import *
 #No se instancia. Es la base de la jerarquia
 class Form(Widget):
-    def __init__(self, screen, x,y,w,h,color_background,color_border = "Black", border_size = -1, active = True):
+    def __init__(self, screen, x,y,w,h,color_background = "Black",color_border = "Black", border_size = -1, active = True):
         super().__init__(screen, x,y,w,h, color_background, color_border, border_size)
         self._slave = pygame.Surface((w,h))
         self.slave_rect = self._slave.get_rect()
