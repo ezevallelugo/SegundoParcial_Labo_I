@@ -114,19 +114,19 @@ class Nivel:
     def actualizar_datos_game_over(self):
         if self._id_nivel == 1:
             nivel = "Nivel_uno"
-            actualizar_game_over_db(nivel)
+            actualizar_game_over_db(nivel,self._datos["Puntaje_actual"])
         elif self._id_nivel == 2:
             nivel = "Nivel_dos"
-            actualizar_game_over_db(nivel) 
+            actualizar_game_over_db(nivel,self._datos["Puntaje_actual"]) 
         elif self._id_nivel == 3:
             nivel = "Nivel_tres"
-            actualizar_game_over_db(nivel)
+            actualizar_game_over_db(nivel,self._datos["Puntaje_actual"])
         elif self._id_nivel == 4:
             nivel = "Nivel_cuatro"
-            actualizar_game_over_db(nivel)   
+            actualizar_game_over_db(nivel,self._datos["Puntaje_actual"])   
         elif self._id_nivel == 5:
             nivel = "Nivel_cinco"
-            actualizar_game_over_db(nivel)
+            actualizar_game_over_db(nivel,self._datos["Puntaje_actual"])
 
     def verificar_game_over(self):
         '''
